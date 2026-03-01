@@ -1,1 +1,2 @@
-Aquin SDK
+Aquin SDK - Python
+pip install aquin
