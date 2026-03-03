@@ -31,6 +31,7 @@ class AquinClient:
         prompt: str,
         max_tokens: int = 512,
         temperature: float = 0.7,
+        system_prompt: str = None,
     ) -> CompletionResponse:
         try:
             res = httpx.post(
@@ -43,6 +44,7 @@ class AquinClient:
                     "prompt": prompt,
                     "max_tokens": max_tokens,
                     "temperature": temperature,
+                    **({"system_prompt": system_prompt} if system_prompt else {}),
                 },
                 timeout=120,
                 follow_redirects=True,
@@ -59,6 +61,7 @@ class AquinClient:
         prompt: str,
         max_tokens: int = 512,
         temperature: float = 0.7,
+        system_prompt: str = None,
     ) -> CompletionResponse:
         async with httpx.AsyncClient() as client:
             try:
@@ -72,6 +75,7 @@ class AquinClient:
                         "prompt": prompt,
                         "max_tokens": max_tokens,
                         "temperature": temperature,
+                        **({"system_prompt": system_prompt} if system_prompt else {}),
                     },
                     timeout=120,
                     follow_redirects=True,
