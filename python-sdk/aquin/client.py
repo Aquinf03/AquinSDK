@@ -41,10 +41,9 @@ class AquinClient:
                     "Content-Type": "application/json",
                 },
                 json={
-                    "prompt": prompt,
+                    "messages": self._build_messages(prompt, system_prompt),
                     "max_tokens": max_tokens,
                     "temperature": temperature,
-                    **({"system_prompt": system_prompt} if system_prompt else {}),
                 },
                 timeout=120,
                 follow_redirects=True,
@@ -72,10 +71,9 @@ class AquinClient:
                         "Content-Type": "application/json",
                     },
                     json={
-                        "prompt": prompt,
+                        "messages": self._build_messages(prompt, system_prompt),
                         "max_tokens": max_tokens,
                         "temperature": temperature,
-                        **({"system_prompt": system_prompt} if system_prompt else {}),
                     },
                     timeout=120,
                     follow_redirects=True,
@@ -86,6 +84,13 @@ class AquinClient:
                 raise InferenceError("Request timed out.")
 
         return self._handle_response(res)
+
+    def _build_messages(self, prompt: str, system_prompt: str = None) -> list:
+        messages = []
+        if system_prompt:
+            messages.append({"role": "system", "content": system_prompt})
+        messages.append({"role": "user", "content": prompt})
+        return messages
 
     def _handle_response(self, res: httpx.Response) -> CompletionResponse:
         if res.status_code == 200:
