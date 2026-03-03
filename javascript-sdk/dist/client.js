@@ -11,7 +11,12 @@ class AquinClient {
         this.baseUrl = baseUrl.replace(/\/$/, "");
     }
     async complete(prompt, options = {}) {
-        const { max_tokens = 512, temperature = 0.7 } = options;
+        const { max_tokens = 512, temperature = 0.7, system_prompt } = options;
+        const messages = [];
+        if (system_prompt)
+            messages.push({ role: "system", content: system_prompt });
+        messages.push({ role: "user", content: prompt });
+        const body = { prompt, messages, max_tokens, temperature };
         let res;
         try {
             res = await fetch(`${this.baseUrl}/api/v1/model`, {
@@ -20,7 +25,7 @@ class AquinClient {
                     Authorization: `Bearer ${this.apiKey}`,
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ prompt, max_tokens, temperature }),
+                body: JSON.stringify(body),
                 redirect: "follow",
             });
         }

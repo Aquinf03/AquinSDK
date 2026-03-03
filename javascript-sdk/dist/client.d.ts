@@ -6,6 +6,7 @@ export interface CompletionResponse {
 export interface CompletionOptions {
     max_tokens?: number;
     temperature?: number;
+    system_prompt?: string;
 }
 export declare class AquinClient {
     private apiKey;

@@ -18,6 +18,7 @@ export interface CompletionResponse {
 export interface CompletionOptions {
   max_tokens?: number;
   temperature?: number;
+  system_prompt?: string;
 }
 
 export class AquinClient {
@@ -34,7 +35,13 @@ export class AquinClient {
     prompt: string,
     options: CompletionOptions = {}
   ): Promise<CompletionResponse> {
-    const { max_tokens = 512, temperature = 0.7 } = options;
+    const { max_tokens = 512, temperature = 0.7, system_prompt } = options;
+
+    const messages: { role: string; content: string }[] = [];
+    if (system_prompt) messages.push({ role: "system", content: system_prompt });
+    messages.push({ role: "user", content: prompt });
+
+    const body: Record<string, unknown> = { prompt, messages, max_tokens, temperature };
 
     let res: Response;
     try {
@@ -44,7 +51,7 @@ export class AquinClient {
           Authorization: `Bearer ${this.apiKey}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ prompt, max_tokens, temperature }),
+        body: JSON.stringify(body),
         redirect: "follow",
       });
     } catch (err) {
